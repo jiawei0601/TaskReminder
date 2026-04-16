@@ -1,4 +1,4 @@
-const CACHE_NAME = 'task-reminder-v2'; // Changed version to force update
+const CACHE_NAME = 'task-reminder-v3'; // Changed version to force update
 const ASSETS = [
   './',
   './index.html',
