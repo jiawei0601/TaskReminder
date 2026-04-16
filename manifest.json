@@ -1,0 +1,17 @@
+{
+  "name": "週期任務提醒工具",
+  "short_name": "任務提醒",
+  "description": "美觀且實用的週期性任務提醒工具",
+  "start_url": "/TaskReminder/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1827/1827347.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
