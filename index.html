@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>週期任務提醒工具 | Task Reminder Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <main class="app-container">
+        <header>
+            <h1>週期任務提醒</h1>
+            <p class="subtitle">設定你的目標，按時進行，記錄成長。</p>
+        </header>
+
+        <section class="task-input-card glass">
+            <h2><span class="icon">➕</span> 新增提醒任務</h2>
+            <div class="input-group">
+                <input type="text" id="taskName" placeholder="要做什麼工作？ (例如：喝水、伸展、讀書)">
+                <div class="row">
+                    <div class="input-with-label">
+                        <label for="taskInterval">提醒週期 (分鐘)</label>
+                        <input type="number" id="taskInterval" min="1" value="30">
+                    </div>
+                    <button id="addTaskBtn" class="primary-btn shadow-glow">新增任務</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard">
+            <div class="active-tasks">
+                <h2><span class="icon">⌛</span> 進行中的任務</h2>
+                <div id="taskList" class="task-grid">
+                    <!-- Tasks will be injected here -->
+                    <div class="empty-state">
+                        <p>目前沒有設定中的任務，快來新增一個吧！</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-panel glass">
+                <h2><span class="icon">📜</span> 完成記錄</h2>
+                <div id="historyList" class="history-list">
+                    <!-- History entries will be injected here -->
+                </div>
+                <button id="clearHistoryBtn" class="text-btn">清除所有記錄</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Reminder Modal -->
+    <div id="reminderModal" class="modal-overlay hidden">
+        <div class="modal glass-heavy slide-up">
+            <div class="modal-content">
+                <div class="alarm-icon">🔔</div>
+                <h3 id="reminderTaskName">任務時間到！</h3>
+                <p>是時候進行這項工作了。完成後請點擊下方按鈕進行記錄。</p>
+                <div class="modal-actions">
+                    <button id="markCompleteBtn" class="primary-btn">完成並記錄</button>
+                    <button id="snoozeBtn" class="secondary-btn">稍後提醒 (5分)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
