@@ -152,13 +152,12 @@ header h1 {
     to { opacity: 1; transform: translateY(0); }
 }
 
-.weekday-selector {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.5rem;
+.weekday-selector input {
+    display: none;
 }
 
-.weekday-selector label {
+.weekday-selector span {
+    display: block;
     flex: 1;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--glass-border);
@@ -170,15 +169,11 @@ header h1 {
     transition: all 0.2s;
 }
 
-.weekday-selector label:has(input:checked) {
+.weekday-selector input:checked + span {
     background: var(--accent-3);
     color: #0f172a;
     border-color: var(--accent-3);
     font-weight: bold;
-}
-
-.weekday-selector input {
-    display: none;
 }
 
 /* Forms */

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'task-reminder-v1';
+const CACHE_NAME = 'task-reminder-v2'; // Changed version to force update
 const ASSETS = [
   './',
   './index.html',
@@ -9,9 +9,25 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  // Use skipWaiting to allow the new SW to take over immediately
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS);
+    })
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  // Claim clients immediately
+  event.waitUntil(clients.claim());
+  // Delete old caches
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.filter((cacheName) => cacheName !== CACHE_NAME)
+          .map((cacheName) => caches.delete(cacheName))
+      );
     })
   );
 });
