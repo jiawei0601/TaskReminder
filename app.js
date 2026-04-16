@@ -38,6 +38,7 @@ class TaskReminder {
         this.followupDetail = document.getElementById('followupDetail');
         this.followupDelayInput = document.getElementById('followupDelay');
         this.followupQuestionInput = document.getElementById('followupQuestion');
+        this.maxPointsInput = document.getElementById('maxPoints');
 
         // Input fields per mode
         this.inputs = {
@@ -54,6 +55,8 @@ class TaskReminder {
         this.surveySection = document.getElementById('surveySection');
         this.surveyLabel = document.getElementById('surveyLabel');
         this.surveyAnswerInput = document.getElementById('surveyAnswer');
+        this.surveyScoreInput = document.getElementById('surveyScore');
+        this.maxScoreLabel = document.getElementById('maxScoreLabel');
         this.markCompleteBtn = document.getElementById('markCompleteBtn');
         this.surveySubmitBtn = document.getElementById('surveySubmitBtn');
         this.snoozeBtn = document.getElementById('snoozeBtn');
@@ -88,7 +91,7 @@ class TaskReminder {
             data: {
                 labels: this.getLast7DaysLabels(),
                 datasets: [{
-                    label: '每日完成數',
+                    label: '每日得分',
                     data: this.getStatsData(),
                     borderColor: '#2dd4bf',
                     backgroundColor: 'rgba(45, 212, 191, 0.1)',
@@ -117,14 +120,14 @@ class TaskReminder {
     }
 
     getStatsData() {
-        const dailyCounts = Array(7).fill(0);
+        const dailyPoints = Array(7).fill(0);
         const now = new Date();
         this.history.forEach(item => {
             const date = new Date(item.completedAt);
             const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-            if (diff >= 0 && diff < 7) dailyCounts[6 - diff]++;
+            if (diff >= 0 && diff < 7) dailyPoints[6 - diff] += (item.earnedPoints || 0);
         });
-        return dailyCounts;
+        return dailyPoints;
     }
 
     switchMode(mode) {
@@ -148,7 +151,8 @@ class TaskReminder {
             status: 'active',
             hasFollowup: this.hasFollowupInput.checked,
             followupDelay: parseInt(this.followupDelayInput.value) || 0,
-            followupQuestion: this.followupQuestionInput.value || '工作成效如何？'
+            followupQuestion: this.followupQuestionInput.value || '工作成效如何？',
+            maxPoints: parseInt(this.maxPointsInput.value) || 100
         };
 
         if (this.currentMode === 'interval') {
@@ -199,14 +203,14 @@ class TaskReminder {
         const task = this.currentReminderTask;
         if (!task) return;
 
-        this.addHistory(task.name, 10);
-        this.fireConfetti();
-        
         if (task.hasFollowup) {
+            this.addHistory(`開始執行: ${task.name}`, 0);
             task.status = 'survey-pending';
             task.surveyTime = Date.now() + (task.followupDelay * 60 * 1000);
             task.nextRun = task.surveyTime;
         } else {
+            this.addHistory(task.name, task.maxPoints);
+            this.fireConfetti();
             task.lastRun = Date.now();
             task.nextRun = this.calculateNextRun(task);
         }
@@ -219,9 +223,11 @@ class TaskReminder {
     submitSurvey() {
         const task = this.currentReminderTask;
         const answer = this.surveyAnswerInput.value.trim();
+        const earnedPoints = parseInt(this.surveyScoreInput.value) || 0;
+
         if (!answer) return alert('請填寫問卷內容');
 
-        this.addHistory(`${task.name} 問卷: ${answer}`, 15);
+        this.addHistory(`${task.name} 評價: ${answer}`, earnedPoints);
         this.fireConfetti();
 
         task.status = 'active';
@@ -234,7 +240,11 @@ class TaskReminder {
     }
 
     addHistory(name, pts) {
-        this.history.unshift({ name, completedAt: Date.now() });
+        this.history.unshift({ 
+            name, 
+            completedAt: Date.now(),
+            earnedPoints: pts
+        });
         this.points += pts;
         this.chart.data.datasets[0].data = this.getStatsData();
         this.chart.update();
@@ -252,6 +262,7 @@ class TaskReminder {
 
     snoozeTask() {
         const task = this.currentReminderTask;
+        if (!task) return;
         task.nextRun = Date.now() + (5 * 60 * 1000);
         this.saveData();
         this.render();
@@ -282,22 +293,26 @@ class TaskReminder {
         this.modalTaskName.textContent = task.name;
         
         if (task.status === 'survey-pending') {
-            this.modalMessage.textContent = '任務後續問卷提醒：';
+            this.modalMessage.textContent = '任務成效問卷：';
             this.surveySection.classList.remove('hidden');
             this.surveyLabel.textContent = task.followupQuestion;
+            this.maxScoreLabel.textContent = task.maxPoints;
+            this.surveyScoreInput.value = task.maxPoints;
+            this.surveyScoreInput.max = task.maxPoints;
             this.markCompleteBtn.classList.add('hidden');
             this.surveySubmitBtn.classList.remove('hidden');
             this.surveyAnswerInput.value = '';
         } else {
-            this.modalMessage.textContent = '是時候進行這項工作了。完成後請點擊下方按鈕進行記錄。';
+            this.modalMessage.textContent = '是時候進行這項工作了。';
             this.surveySection.classList.add('hidden');
             this.markCompleteBtn.classList.remove('hidden');
             this.surveySubmitBtn.classList.add('hidden');
+            this.markCompleteBtn.textContent = `完成並記錄 (${task.hasFollowup ? '待評分' : '+' + task.maxPoints + 'pt'})`;
         }
 
         this.modal.classList.remove('hidden');
         if ("Notification" in window && Notification.permission === "granted") {
-            new Notification(task.status === 'survey-pending' ? "問卷提醒" : "任務提醒", { body: task.name });
+            new Notification(task.status === 'survey-pending' ? "評價時間到" : "任務提醒", { body: task.name });
         }
     }
 
@@ -340,7 +355,10 @@ class TaskReminder {
                     <button class="delete-task" onclick="app.deleteTask(${task.id})">✖</button>
                 </div>
                 <div class="task-meta">
-                    <span>${task.status === 'survey-pending' ? '🔔 待填問卷' : '⏳ 模式: ' + this.getScheduleDesc(task)}</span>
+                    <div class="row" style="justify-content: space-between; gap: 0.5rem; width: 100%;">
+                        <span>${task.status === 'survey-pending' ? '🔔 待評分' : '⏳ ' + this.getScheduleDesc(task)}</span>
+                        <span>最高: ${task.maxPoints}pt</span>
+                    </div>
                     <div id="countdown-${task.id}" class="countdown">--:--</div>
                 </div>
                 <div id="progress-${task.id}" class="progress-bar"></div>
@@ -349,7 +367,7 @@ class TaskReminder {
     }
 
     getScheduleDesc(t) {
-        if (t.mode === 'interval') return `每 ${t.interval} 分鐘`;
+        if (t.mode === 'interval') return `每 ${t.interval} 分`;
         if (t.mode === 'daily') return `每天 ${t.time}`;
         const daysMap = ['日', '一', '二', '三', '四', '五', '六'];
         return `每週 (${t.weekdays.map(d => daysMap[d]).join(',')}) ${t.time}`;
@@ -368,11 +386,12 @@ class TaskReminder {
         }
         this.historyList.innerHTML = this.history.map(entry => {
             const date = new Date(entry.completedAt);
-            return `<div class="history-item"><span>${entry.name}</span><span class="history-time">${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></div>`;
+            const pts = entry.earnedPoints > 0 ? ` (+${entry.earnedPoints}pt)` : '';
+            return `<div class="history-item"><span>${entry.name}${pts}</span><span class="history-time">${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></div>`;
         }).join('');
     }
 
-    clearHistory() { if (confirm('確定清除清單？')) { this.history = []; this.points = 0; this.saveData(); this.render(); this.chart.update(); } }
+    clearHistory() { if (confirm('確定清除清單與積分？')) { this.history = []; this.points = 0; this.saveData(); this.render(); this.chart.update(); } }
 }
 
 const app = new TaskReminder();
