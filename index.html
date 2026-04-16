@@ -12,6 +12,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Chart.js and Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
     <div class="background-blobs">
@@ -22,8 +25,19 @@
 
     <main class="app-container">
         <header>
-            <h1>週期任務提醒</h1>
-            <p class="subtitle">設定你的目標，按時進行，記錄成長。</p>
+            <div class="header-main">
+                <div>
+                    <h1>週期任務提醒</h1>
+                    <p class="subtitle">設定你的目標，按時進行，記錄成長。</p>
+                </div>
+                <div class="user-rank glass">
+                    <span class="rank-icon">🏆</span>
+                    <div class="rank-info">
+                        <span class="rank-label">累積積分</span>
+                        <span id="totalPoints" class="rank-value">0</span>
+                    </div>
+                </div>
+            </div>
         </header>
 
         <section class="task-input-card glass">
@@ -73,7 +87,36 @@
                     </div>
                 </div>
 
+                <div class="advanced-settings glass-content">
+                    <div class="followup-toggle">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="hasFollowup">
+                            <span class="checkmark"></span>
+                            啟用完成後的「後續問卷提醒」
+                        </label>
+                    </div>
+                    <div id="followupDetail" class="hidden">
+                        <div class="row">
+                            <div class="input-with-label">
+                                <label for="followupDelay">幾分鐘後填寫問卷？</label>
+                                <input type="number" id="followupDelay" value="40" min="1">
+                            </div>
+                            <div class="input-with-label">
+                                <label for="followupQuestion">問卷內容</label>
+                                <input type="text" id="followupQuestion" placeholder="例如：你今天做了什麼運動？">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <button id="addTaskBtn" class="primary-btn shadow-glow">新增任務</button>
+            </div>
+        </section>
+
+        <section class="stats-card glass">
+            <h2><span class="icon">📊</span> 每週達成效率</h2>
+            <div class="chart-container">
+                <canvas id="statsChart"></canvas>
             </div>
         </section>
 
@@ -104,9 +147,18 @@
             <div class="modal-content">
                 <div class="alarm-icon">🔔</div>
                 <h3 id="reminderTaskName">任務時間到！</h3>
-                <p>是時候進行這項工作了。完成後請點擊下方按鈕進行記錄。</p>
+                <p id="reminderMessage">是時候進行這項工作了。完成後請點擊下方按鈕進行記錄。</p>
+                
+                <div id="surveySection" class="hidden">
+                    <div class="input-with-label">
+                        <label id="surveyLabel" for="surveyAnswer">問卷回答</label>
+                        <input type="text" id="surveyAnswer" placeholder="輸入紀錄內容...">
+                    </div>
+                </div>
+
                 <div class="modal-actions">
-                    <button id="markCompleteBtn" class="primary-btn">完成並記錄</button>
+                    <button id="markCompleteBtn" class="primary-btn">完成並記錄 (+10pt)</button>
+                    <button id="surveySubmitBtn" class="primary-btn hidden">提交紀錄 (+15pt)</button>
                     <button id="snoozeBtn" class="secondary-btn">稍後提醒 (5分)</button>
                 </div>
             </div>

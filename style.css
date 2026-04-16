@@ -68,18 +68,43 @@ body {
     gap: 2rem;
 }
 
-header {
-    text-align: center;
-    margin-bottom: 1rem;
+.header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
-header h1 {
-    font-size: 2.5rem;
+.user-rank {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rank-icon {
+    font-size: 1.5rem;
+}
+
+.rank-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.rank-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rank-value {
+    font-size: 1.25rem;
     font-weight: 700;
-    background: linear-gradient(to right, #fff, #94a3b8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.5rem;
+    color: var(--accent-3);
 }
 
 .subtitle {
@@ -174,6 +199,43 @@ header h1 {
     color: #0f172a;
     border-color: var(--accent-3);
     font-weight: bold;
+}
+
+/* Advanced Settings */
+.advanced-settings {
+    margin-top: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 12px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.task-card.survey-mode {
+    border-color: #c084fc;
+    background: rgba(192, 132, 252, 0.1);
+}
+
+.task-card.survey-mode .countdown {
+    color: #c084fc !important;
+}
+
+/* Stats Card */
+.stats-card {
+    margin-bottom: 2rem;
+}
+
+.chart-container {
+    height: 300px;
+    margin-top: 1rem;
+    position: relative;
 }
 
 /* Forms */
