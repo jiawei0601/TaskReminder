@@ -30,13 +30,50 @@
             <h2><span class="icon">➕</span> 新增提醒任務</h2>
             <div class="input-group">
                 <input type="text" id="taskName" placeholder="要做什麼工作？ (例如：喝水、伸展、讀書)">
-                <div class="row">
+                
+                <div class="reminder-modes">
+                    <label class="mode-btn active" data-mode="interval">
+                        <input type="radio" name="remindMode" value="interval" checked> 固定頻率
+                    </label>
+                    <label class="mode-btn" data-mode="daily">
+                        <input type="radio" name="remindMode" value="daily"> 每天固定
+                    </label>
+                    <label class="mode-btn" data-mode="weekly">
+                        <input type="radio" name="remindMode" value="weekly"> 每週特定
+                    </label>
+                </div>
+
+                <div id="intervalSettings" class="mode-settings">
                     <div class="input-with-label">
                         <label for="taskInterval">提醒週期 (分鐘)</label>
                         <input type="number" id="taskInterval" min="1" value="30">
                     </div>
-                    <button id="addTaskBtn" class="primary-btn shadow-glow">新增任務</button>
                 </div>
+
+                <div id="dailySettings" class="mode-settings hidden">
+                    <div class="input-with-label">
+                        <label for="dailyTime">提醒時間</label>
+                        <input type="time" id="dailyTime" value="09:00">
+                    </div>
+                </div>
+
+                <div id="weeklySettings" class="mode-settings hidden">
+                    <div class="weekday-selector">
+                        <label><input type="checkbox" value="1"> 一</label>
+                        <label><input type="checkbox" value="2"> 二</label>
+                        <label><input type="checkbox" value="3"> 三</label>
+                        <label><input type="checkbox" value="4"> 四</label>
+                        <label><input type="checkbox" value="5"> 五</label>
+                        <label><input type="checkbox" value="6"> 六</label>
+                        <label><input type="checkbox" value="0"> 日</label>
+                    </div>
+                    <div class="input-with-label">
+                        <label for="weeklyTime">提醒時間</label>
+                        <input type="time" id="weeklyTime" value="09:00">
+                    </div>
+                </div>
+
+                <button id="addTaskBtn" class="primary-btn shadow-glow">新增任務</button>
             </div>
         </section>
 

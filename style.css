@@ -107,6 +107,80 @@ header h1 {
     padding: 3rem;
 }
 
+/* Reminder Modes Switcher */
+.reminder-modes {
+    display: flex;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.25rem;
+    border-radius: 12px;
+    gap: 0.25rem;
+}
+
+.mode-btn {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.mode-btn input {
+    display: none;
+}
+
+.mode-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.mode-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+.mode-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.weekday-selector {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.weekday-selector label {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.weekday-selector label:has(input:checked) {
+    background: var(--accent-3);
+    color: #0f172a;
+    border-color: var(--accent-3);
+    font-weight: bold;
+}
+
+.weekday-selector input {
+    display: none;
+}
+
 /* Forms */
 .task-input-card h2 {
     font-size: 1.25rem;
